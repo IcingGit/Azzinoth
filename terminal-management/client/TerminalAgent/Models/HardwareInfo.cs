@@ -27,7 +27,7 @@ public class MemoryInfo
     public long CapacityMB { get; set; }
     public double SpeedMHz { get; set; }
     public string MemoryType { get; set; } = string.Empty;
-    public int Slot { get; set; }
+    public string Slot { get; set; } = string.Empty;
     public string Manufacturer { get; set; } = string.Empty;
 }
 

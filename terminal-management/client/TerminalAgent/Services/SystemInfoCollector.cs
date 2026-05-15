@@ -64,13 +64,19 @@ public class SystemInfoCollector
         using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMemory");
         foreach (var obj in searcher.Get())
         {
+            short smbiosType = 0;
+            try { smbiosType = Convert.ToInt16(obj["SMBIOSMemoryType"] ?? 0); }
+            catch { smbiosType = 0; }
+
+            var locator = obj["DeviceLocator"]?.ToString()?.Trim() ?? string.Empty;
+
             list.Add(new MemoryInfo
             {
                 Model = obj["PartNumber"]?.ToString()?.Trim() ?? string.Empty,
                 CapacityMB = Convert.ToInt64(obj["Capacity"] ?? 0) / (1024 * 1024),
                 SpeedMHz = Convert.ToDouble(obj["Speed"] ?? 0),
-                MemoryType = MapMemoryType(Convert.ToInt16(obj["SMBIOSMemoryType"] ?? 0)),
-                Slot = Convert.ToInt32(obj["DeviceLocator"]?.ToString()?.TrimStart('D', 'I', 'M', 'M', ' ') ?? "0"),
+                MemoryType = MapMemoryType(smbiosType),
+                Slot = locator,
                 Manufacturer = obj["Manufacturer"]?.ToString()?.Trim() ?? string.Empty
             });
         }
